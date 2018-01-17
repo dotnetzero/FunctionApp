@@ -32,12 +32,11 @@ process {
         Write-Verbose "No $gitversionFile found"
     }
 
-    Copy-Item -Force -Path "$sourcePath\*" -Recurse -Destination $azureFunctionsArtfiactsPath -Exclude local.settings.json, Azure
-
-    if (Test-Path -Path "$azureFunctionsArtfiactsPath\_proxies.json") {
-        Write-Verbose "Copy $azureFunctionsArtfiactsPath\_proxies.json to $azureFunctionsArtfiactsPath\proxies.json"
-        Move-Item -Force "$azureFunctionsArtfiactsPath\_proxies.json" "$azureFunctionsArtfiactsPath\proxies.json"
-    }
+    Copy-Item -Force -Recurse -Path "$sourcePath\DnzHost\bin\Release\net461\*" -Destination $azureFunctionsArtfiactsPath
+    # if (Test-Path -Path "$azureFunctionsArtfiactsPath\_proxies.json") {
+    #     Write-Verbose "Copy $azureFunctionsArtfiactsPath\_proxies.json to $azureFunctionsArtfiactsPath\proxies.json"
+    #     Move-Item -Force "$azureFunctionsArtfiactsPath\_proxies.json" "$azureFunctionsArtfiactsPath\proxies.json"
+    # }
 
     # Build Azure PowerShell Tooling
     # if (((Test-Path -Path "$azureArtifactsDirectory") -eq $false) -and (Test-Path -Path $azureSourceDirectory) ) {
