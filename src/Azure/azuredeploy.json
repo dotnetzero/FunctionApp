@@ -257,5 +257,27 @@
                 "[resourceId('Microsoft.Web/sites', variables('webAppName'))]"
             ]
         }
-    ]
+    ],
+    "outputs": {
+      "resourceGroupUniqueString": {
+        "type": "string",
+        "value": "[variables('resourceGroupUniqueString')]"
+      },
+      "webAppName": {
+        "type": "string",
+        "value": "[variables('webAppName')]"
+      },
+      "storageAccountName": {
+        "type": "string",
+        "value": "[variables('storageAccountName')]"
+      },
+      "domainName_internal": {
+        "type": "string",
+        "value": "[variables('domainName_internal')]"
+      },
+      "referenceOutput": {
+        "type": "object",
+        "value": "[listKeys(variables('storageAccountName'), '2016-12-01')]"
+      }
+    }
 }
