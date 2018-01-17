@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param (
     [string]$sourcePath = "src",
+    [string]$configuration = "Release",
     [string]$artifactsPath = "artifacts"
 )
 
@@ -32,11 +33,7 @@ process {
         Write-Verbose "No $gitversionFile found"
     }
 
-    Copy-Item -Force -Recurse -Path "$sourcePath\DnzHost\bin\Release\net461\*" -Destination $azureFunctionsArtfiactsPath
-    # if (Test-Path -Path "$azureFunctionsArtfiactsPath\_proxies.json") {
-    #     Write-Verbose "Copy $azureFunctionsArtfiactsPath\_proxies.json to $azureFunctionsArtfiactsPath\proxies.json"
-    #     Move-Item -Force "$azureFunctionsArtfiactsPath\_proxies.json" "$azureFunctionsArtfiactsPath\proxies.json"
-    # }
+    Copy-Item -Force -Recurse -Path "$sourcePath\DnzHost\bin\$configuration\net461\*" -Destination $azureFunctionsArtfiactsPath
 
     # Build Azure PowerShell Tooling
     # if (((Test-Path -Path "$azureArtifactsDirectory") -eq $false) -and (Test-Path -Path $azureSourceDirectory) ) {
