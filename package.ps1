@@ -36,7 +36,6 @@ process {
     Copy-Item -Force -Recurse -Path "$sourcePath\DnzHost\bin\$configuration\net461\*" -Destination $azureFunctionsArtfiactsPath
 
     # Build Azure PowerShell Tooling
-    # if (((Test-Path -Path "$azureArtifactsDirectory") -eq $false) -and (Test-Path -Path $azureSourceDirectory) ) {
     if (Test-Path -Path $azureSourceDirectory) {
         Write-Verbose "Build Azure Tools for Release Management"
 
@@ -50,6 +49,15 @@ process {
         }
         
         Add-Content -Encoding Ascii -Path $azureToolsModule -Value "Export-ModuleMember -Function $($modules -join `",`")"
+    }
+
+    # Copy Azure Resource Management Templates
+    if (Test-Path -Path $azureSourceDirectory) {
+        Write-Verbose "Copy Azure Resource Management Templates to $($azureArtifactsDirectory)"
+
+        New-Item -ItemType Directory -Path $azureArtifactsDirectory -Force -ErrorAction Ignore | Out-Null
+
+        Copy-Item -Force -Recurse -Path "$azureSourceDirectory\*.json" -Destination $azureArtifactsDirectory
     }
 
 }
