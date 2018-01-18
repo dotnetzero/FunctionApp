@@ -5,7 +5,7 @@
             "matchCondition": {
                 "route": "/dotnetcli"
             },
-            "backendUri": "https://your_azure_app.azurewebsites.net/api/fullapp",
+            "backenduri": "http://localhost:7071/api/dotnetzerohost",
             "requestOverrides": {
                 "backend.request.method": "get",
                 "backend.request.querystring.clicmd": "Get-DotNetProjects | New-DotNetSolution",
@@ -16,7 +16,7 @@
             "matchCondition": {
                 "route": "/"
             },
-            "backendUri": "https://your_azure_app.azurewebsites.net/api/fullapp",
+            "backenduri": "http://localhost:7071/api/dotnetzerohost",
             "requestOverrides": {
                 "backend.request.method": "get",
                 "backend.request.querystring.clicmd": "New-SourceTree",
