@@ -7,10 +7,13 @@ param (
 process {
 
     $azureSourceDirectory = "$sourcePath\Azure"
+    $infrastructureTestDirectory = "$sourcePath\Infrastructure.Tests"
 
     $gitversionFile = ".git\gitversion_cache\*.yml"
     
     $azureArtifactsDirectory = "$artifactsPath\Azure"
+    $infrastructureTestArtifactsDirectory = "$artifactsPath\Pester"
+
     $azureToolsModule = "$azureArtifactsDirectory\Azure-Tools.psm1"
     $azureFunctionsArtfiactsPath = "$artifactsPath\Functions"
 
@@ -40,7 +43,6 @@ process {
     }
 
     # Build Azure PowerShell Tooling
-    # if (((Test-Path -Path "$azureArtifactsDirectory") -eq $false) -and (Test-Path -Path $azureSourceDirectory) ) {
     if (Test-Path -Path $azureSourceDirectory) {
         Write-Verbose "Build Azure Tools for Release Management"
 
@@ -54,6 +56,16 @@ process {
         }
         
         Add-Content -Encoding Ascii -Path $azureToolsModule -Value "Export-ModuleMember -Function $($modules -join `",`")"
+    }
+
+    # Build Infrastructure Test Suite
+    if (Test-Path -Path $infrastructureTestDirectory) {
+        Write-Verbose "Build Infrastructure Test Suite for Release Management"
+
+        New-Item -ItemType Directory -Path $infrastructureTestArtifactsDirectory -Force -ErrorAction Ignore | Out-Null
+
+
+        Copy-Item -Force -Path "$infrastructureTestDirectory\*" -Filter "*.ps1" -Recurse -Destination $infrastructureTestArtifactsDirectory
     }
 
 }
