@@ -15,7 +15,7 @@
             "type": "string"
         },
         "domainName": {
-            "defaultValue": "dotnetzero.com",
+            "defaultValue": "example.com",
             "type": "string"
         },
         "hostingPlanName": {
