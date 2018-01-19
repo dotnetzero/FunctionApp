@@ -3,13 +3,13 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "appServicePlanNamePrefix": {
-            "value": "dnz"
+            "value": "appServicePlan"
         },
         "environmentName": {
             "value": "test"
         },
         "webAppNamePrefix": {
-            "value": "dnzservice"
+            "value": "webAppName"
         },
         "appInsightsServiceNamePrefix": {
             "value": "appinsights"
@@ -19,6 +19,9 @@
         },
         "location": {
             "value": "westus"
+        },
+        "connectionStringName": {
+            "value": "connectionString01"
         }
     }
 }

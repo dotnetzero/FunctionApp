@@ -29,6 +29,10 @@
         "appInsightsLocation": {
             "defaultValue": "westus2",
             "type": "string"
+        },
+        "connectionStringName": {
+            "defaultValue": "connectionString01",
+            "type": "string"
         }
     },
     "variables": {
@@ -153,6 +157,12 @@
                         {
                             "name": "AppInsights_InstrumentationKey",
                             "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsServiceName'))).InstrumentationKey]"
+                        }
+                    ],
+                    "connectionStrings": [
+                        {
+                            "name": "parameters('connectionStringName')",
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]"
                         }
                     ]
                 }
