@@ -2,23 +2,23 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "environmentName": {
-            "value": "prod"
-        },
-        "location": {
-            "value": "westus"
-        },
-        "webAppNamePrefix": {
+        "appServicePlanNamePrefix": {
             "value": "dnz"
         },
-        "domainName": {
-            "value": "example.com"
+        "environmentName": {
+            "value": "test"
         },
-        "hostingPlanName": {
-            "value": "WestUSPlan"
+        "webAppNamePrefix": {
+            "value": "dnzservice"
+        },
+        "appInsightsServiceNamePrefix": {
+            "value": "appinsights"
         },
         "storageAccountNamePrefix": {
             "value": "store01"
+        },
+        "location": {
+            "value": "westus"
         }
     }
 }
