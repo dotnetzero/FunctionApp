@@ -33,6 +33,36 @@
         "connectionStringName": {
             "defaultValue": "connectionString01",
             "type": "string"
+        },
+        "keyVaultNamePrefix": {
+            "type": "string"
+        },
+        "tenantId": {
+            "type": "string"
+        },
+        "vaultSku": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "Premium"
+            ]
+        },
+        "keysPermissions": {
+            "type": "array",
+            "defaultValue": [
+                "get"
+            ]
+        },
+        "secretsPermissions": {
+            "type": "array",
+            "defaultValue": [
+                "get"
+            ]
+        },
+        "adminAzureKeyVaultAccess": {
+            "type": "string",
+            "defaultValue": ""
         }
     },
     "variables": {
@@ -41,21 +71,102 @@
         "webAppName": "[concat(parameters('webAppNamePrefix'),parameters('environmentName'),variables('resourceGroupUniqueString'))]",
         "appServicePlanName": "[concat(parameters('appServicePlanNamePrefix'),parameters('environmentName'),variables('resourceGroupUniqueString'))]",
         "appInsightsServiceName": "[concat(parameters('appInsightsServiceNamePrefix'),parameters('environmentName'),variables('resourceGroupUniqueString'))]",
-        "hostNameBindings_Internal": "[concat(variables('webAppName'),'.','azurewebsites.net')]"
+        "hostNameBindings_Internal": "[concat(variables('webAppName'),'.','azurewebsites.net')]",
+        "keyVaultName": "[concat(parameters('keyVaultNamePrefix'),parameters('environmentName'),variables('resourceGroupUniqueString'))]"
     },
     "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "name": "[variables('keyVaultName')]",
+            "apiVersion": "2015-06-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "tenantId": "[parameters('tenantId')]",
+                "accessPolicies": [
+                    {
+                        "tenantId": "[parameters('tenantId')]",
+                        "objectId": "2928b167-97fb-491a-a585-9ff2b88dc38c",
+                        "permissions": {
+                            "keys": "[parameters('keysPermissions')]",
+                            "secrets": "[parameters('secretsPermissions')]"
+                        }
+                    }
+                ],
+                "sku": {
+                    "name": "[parameters('vaultSku')]",
+                    "family": "A"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/accessPolicies",
+            "name": "[concat(variables('keyVaultName'), '/add')]",
+            "apiVersion": "2015-06-01",
+            "properties": {
+                "accessPolicies": [
+                    {
+                        "tenantId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('webappName')),'/providers/Microsoft.ManagedIdentity/Identities/default'),'2015-08-31-PREVIEW').tenantId]",
+                        "objectId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('webappName')),'/providers/Microsoft.ManagedIdentity/Identities/default'),'2015-08-31-PREVIEW').principalId]",
+                        "permissions": {
+                            "keys": "[parameters('keysPermissions')]",
+                            "secrets": "[parameters('secretsPermissions')]"
+                        }
+                    },
+                    {
+                        "tenantId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('webappName')),'/providers/Microsoft.ManagedIdentity/Identities/default'),'2015-08-31-PREVIEW').tenantId]",
+                        "objectId": "[parameters('adminAzureKeyVaultAccess')]",
+                        "permissions": {
+                            "keys": ["All"],
+                            "secrets": ["All"]
+                        }
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]",
+                "[resourceId('Microsoft.Web/sites', variables('webAppName'))]"
+            ]
+        },
+        {
+            "comments": "Azure Blob Storage Key (key1) to Azure KeyVault",
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'storageAccountKey1')]",
+            "apiVersion": "2015-06-01",
+            "properties": {
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
+            ]
+        },
+        {
+            "comments": "Azure Blob Storage Key (key2) to Azure KeyVault",
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/', 'storageAccountKey2')]",
+            "apiVersion": "2015-06-01",
+            "properties": {
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key2)]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
+            ]
+        },
         {
             "type": "microsoft.insights/components",
             "kind": "other",
             "name": "[variables('appInsightsServiceName')]",
             "apiVersion": "2014-04-01",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('appInsightsLocation')]",
             "tags": {},
             "scale": null,
             "properties": {
                 "ApplicationId": "[variables('appInsightsServiceName')]"
             },
-            "dependsOn": []
+            "dependsOn": [
+                "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
+            ]
         },
         {
             "type": "Microsoft.Storage/storageAccounts",
@@ -123,6 +234,9 @@
             "name": "[variables('webAppName')]",
             "apiVersion": "2016-08-01",
             "location": "[resourceGroup().location]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
             "scale": null,
             "properties": {
                 "name": "[variables('webAppName')]",
@@ -169,7 +283,8 @@
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
-                "[resourceId('microsoft.insights/components', variables('appInsightsServiceName'))]"
+                "[resourceId('microsoft.insights/components', variables('appInsightsServiceName'))]",
+                "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
             ]
         },
         {
@@ -216,6 +331,14 @@
         "AppInsights_InstrumentationKey": {
             "type": "string",
             "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsServiceName'))).InstrumentationKey]"
+        },
+        "principleId": {
+            "type": "string",
+            "value": "[reference(concat(resourceId('Microsoft.Web/sites', variables('webappName')),'/providers/Microsoft.ManagedIdentity/Identities/default'),'2015-08-31-PREVIEW').principalId]"
+        },
+        "tenantId": {
+            "type": "string",
+            "value": "[reference(concat(resourceId('Microsoft.Web/sites', variables('webappName')),'/providers/Microsoft.ManagedIdentity/Identities/default'),'2015-08-31-PREVIEW').tenantId]"
         }
     }
 }
