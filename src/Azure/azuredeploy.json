@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "appServicePlanNamePrefix": {
-            "defaultValue": "dnz",
+            "defaultValue": "appServicePlan",
             "type": "string"
         },
         "environmentName": {
@@ -11,7 +11,7 @@
             "type": "string"
         },
         "webAppNamePrefix": {
-            "defaultValue": "dnzservice",
+            "defaultValue": "webAppName",
             "type": "string"
         },
         "appInsightsServiceNamePrefix": {
@@ -116,8 +116,12 @@
                         "tenantId": "[reference(concat(resourceId('Microsoft.Web/sites', variables('webappName')),'/providers/Microsoft.ManagedIdentity/Identities/default'),'2015-08-31-PREVIEW').tenantId]",
                         "objectId": "[parameters('adminAzureKeyVaultAccess')]",
                         "permissions": {
-                            "keys": ["All"],
-                            "secrets": ["All"]
+                            "keys": [
+                                "All"
+                            ],
+                            "secrets": [
+                                "All"
+                            ]
                         }
                     }
                 ]
