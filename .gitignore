@@ -290,3 +290,4 @@ local.settings.json
 
 artifacts/*
 */**/AzureRmProfile.json
+*/**/Properties/PublishProfiles/*
