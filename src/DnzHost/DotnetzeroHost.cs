@@ -7,6 +7,8 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Microsoft.Azure.KeyVault;
+using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -16,16 +18,33 @@ namespace DnzHost
 {
     public static class DotnetzeroHost
     {
+        private static HttpClient client = new HttpClient();
+
         [FunctionName("DotnetzeroHost")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
+            var azureServiceTokenProvider = new AzureServiceTokenProvider();
+            log.Info($"azureServiceTokenProvider: {azureServiceTokenProvider}");
+
+            var kvClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback), client);
+            log.Info($"kvClient: {kvClient}");
+
+            //https://azvtestjgtw5xdmnycgi.vault.azure.net/secrets/storageAccountKey1/99a548cbf01a4fdc9a9f09efff541fce
+            var vaultBaseUrl = Environment.GetEnvironmentVariable("storageAccountKey1Uri");
+            log.Info($"vaultBaseUrl: {vaultBaseUrl}");
+
+            var secretBundle = await kvClient.GetSecretAsync(vaultBaseUrl);
+            log.Info($"secretBundleValue: {secretBundle.Value}");
+
+            string connectionString = secretBundle.Value;
+
             bool beta = false;
             string productionContainer = Environment.GetEnvironmentVariable("ProductionContainer");
             string betaContainer = Environment.GetEnvironmentVariable("BetaContainer");
 
             var response = new HttpResponseMessage(HttpStatusCode.OK);
 
-            var connectionString = ConfigurationManager.ConnectionStrings["store01dotnetzero_STORAGE"].ConnectionString;
+            //var connectionString = ConfigurationManager.ConnectionStrings["store01dotnetzero_STORAGE"].ConnectionString;
             var storageAccount = CloudStorageAccount.Parse(connectionString);
             log.Info($"connectionString: {storageAccount}");
             var blobClient = storageAccount.CreateCloudBlobClient();

@@ -30,10 +30,6 @@
             "defaultValue": "westus2",
             "type": "string"
         },
-        "connectionStringName": {
-            "defaultValue": "connectionString01",
-            "type": "string"
-        },
         "keyVaultNamePrefix": {
             "type": "string"
         },
@@ -275,12 +271,14 @@
                         {
                             "name": "AppInsights_InstrumentationKey",
                             "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsServiceName'))).InstrumentationKey]"
-                        }
-                    ],
-                    "connectionStrings": [
+                        },
                         {
-                            "name": "[parameters('connectionStringName')]",
-                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1)]"
+                            "name": "storageAccountKey1Uri",
+                            "value": "[concat('https://',variables('keyVaultName'),'.vault.azure.net/secrets/storageAccountKey1')]"
+                        },
+                        {
+                            "name": "storageAccountKey2Uri",
+                            "value": "[concat('https://',variables('keyVaultName'),'.vault.azure.net/secrets/storageAccountKey2')]"
                         }
                     ]
                 }

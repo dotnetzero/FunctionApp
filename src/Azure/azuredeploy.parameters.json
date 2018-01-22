@@ -20,9 +20,6 @@
         "location": {
             "value": "westus"
         },
-        "connectionStringName": {
-            "value": "connectionString01"
-        },
         "keyVaultNamePrefix": {
             "value": "azv"
         },
@@ -30,7 +27,7 @@
             "value": "359c6b8d-e198-4b68-96e1-34c569fb1e84"
         },
         "adminAzureKeyVaultAccess": {
-            "value":"eb196417-6a09-4d5b-a148-501980945685"
+            "value": "eb196417-6a09-4d5b-a148-501980945685"
         },
         "keysPermissions": {
             "value": [
