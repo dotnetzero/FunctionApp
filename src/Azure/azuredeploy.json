@@ -68,7 +68,9 @@
         "appServicePlanName": "[concat(parameters('appServicePlanNamePrefix'),parameters('environmentName'),variables('resourceGroupUniqueString'))]",
         "appInsightsServiceName": "[concat(parameters('appInsightsServiceNamePrefix'),parameters('environmentName'),variables('resourceGroupUniqueString'))]",
         "hostNameBindings_Internal": "[concat(variables('webAppName'),'.','azurewebsites.net')]",
-        "keyVaultName": "[concat(parameters('keyVaultNamePrefix'),parameters('environmentName'),variables('resourceGroupUniqueString'))]"
+        "keyVaultName": "[concat(parameters('keyVaultNamePrefix'),parameters('environmentName'),variables('resourceGroupUniqueString'))]",
+        "storageAccountKey1SecretUri": "[concat('https://',variables('keyVaultName'),'.vault.azure.net/secrets/storageAccountKey1')]",
+        "storageAccountKey2SecretUri": "[concat('https://',variables('keyVaultName'),'.vault.azure.net/secrets/storageAccountKey2')]"
     },
     "resources": [
         {
@@ -341,6 +343,14 @@
         "tenantId": {
             "type": "string",
             "value": "[reference(concat(resourceId('Microsoft.Web/sites', variables('webappName')),'/providers/Microsoft.ManagedIdentity/Identities/default'),'2015-08-31-PREVIEW').tenantId]"
+        },
+        "storageAccountKey1SecretUri": {
+            "type": "string",
+            "value": "[variables('storageAccountKey1SecretUri')]"
+        },
+        "storageAccountKey2SecretUri": {
+            "type": "string",
+            "value": "[variables('storageAccountKey2SecretUri')]"
         }
     }
 }
