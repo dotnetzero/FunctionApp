@@ -2,23 +2,42 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "appServicePlanNamePrefix": {
+            "value": "appServicePlan"
+        },
         "environmentName": {
-            "value": "prod"
+            "value": "test"
+        },
+        "webAppNamePrefix": {
+            "value": "webAppName"
+        },
+        "appInsightsServiceNamePrefix": {
+            "value": "appinsights"
+        },
+        "storageAccountNamePrefix": {
+            "value": "store01"
         },
         "location": {
             "value": "westus"
         },
-        "webAppNamePrefix": {
-            "value": "dnz"
+        "keyVaultNamePrefix": {
+            "value": "azv"
         },
-        "domainName": {
-            "value": "example.com"
+        "tenantId": {
+            "value": "ad-tentant_id"
         },
-        "hostingPlanName": {
-            "value": "WestUSPlan"
+        "adminAzureKeyVaultAccess": {
+            "value": "ad-id-for-admin-access"
         },
-        "storageAccountNamePrefix": {
-            "value": "store01"
+        "keysPermissions": {
+            "value": [
+                "get"
+            ]
+        },
+        "secretsPermissions": {
+            "value": [
+                "get"
+            ]
         }
     }
 }

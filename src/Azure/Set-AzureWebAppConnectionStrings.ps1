@@ -10,7 +10,7 @@ function Set-AzureWebAppConnectionStrings {
     process {
 
         if ($ConnectionStrings.Count -gt 0) {
-            Write-Verbose "Set $($Appsettings.Count) app settings for $($ResourceGroupName) / $($WebAppName)"
+            Write-Verbose "Setting $($ConnectionStrings.Count) connection strings for $($ResourceGroupName) / $($WebAppName)"
 
             $connectionStringHash = @{}
             $ConnectionStrings.GetEnumerator() | ForEach-Object{
