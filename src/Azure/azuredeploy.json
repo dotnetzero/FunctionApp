@@ -281,6 +281,10 @@
                         {
                             "name": "storageAccountKey2Uri",
                             "value": "[concat('https://',variables('keyVaultName'),'.vault.azure.net/secrets/storageAccountKey2')]"
+                        },
+                        {
+                            "name": "StatusEndpoint",
+                            "value": "[variables('hostNameBindings_Internal')]"
                         }
                     ]
                 }
